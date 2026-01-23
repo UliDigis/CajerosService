@@ -14,15 +14,15 @@ public class RolJPA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_rol", nullable = false)
-    private int id_rol;
+    private Integer id_rol;
     
     @Column(name = "nombre_rol", nullable = false)
     private String nombre_rol;
     
     @Column(name = "estado", nullable = false)
-    private boolean estado;
+    private Boolean estado;
 
-    public int getId_rol() {
+    public Integer getId_rol() {
         return id_rol;
     }
 
@@ -34,11 +34,11 @@ public class RolJPA {
         this.nombre_rol = nombre_rol;
     }
 
-    public boolean isEstado() {
+    public Boolean isEstado() {
         return estado;
     }
 
-    public void setEstado(boolean estado) {
+    public void setEstado(Boolean estado) {
         this.estado = estado;
     }
     

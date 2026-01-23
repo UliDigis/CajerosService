@@ -16,46 +16,46 @@ public class TarjetaJPA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tarjeta", nullable = false)
-    private int id_tarjeta;
+    private Integer id_tarjeta;
 
     @Column(name = "numero_tarjeta")
-    private int numero_tarjeta;
+    private Integer numero_tarjeta;
 
     @Column(name = "nip_hash")
-    private int nip;
+    private Integer nip;
 
     @Column(name = "estado")
-    private boolean estado;
+    private Boolean estado;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_cuenta", nullable = false)
     private CuentaBancariaJPA id_cuenta;
 
-    public int getId_tarjeta() {
+    public Integer getId_tarjeta() {
         return id_tarjeta;
     }
 
-    public int getNumero_tarjeta() {
+    public Integer getNumero_tarjeta() {
         return numero_tarjeta;
     }
 
-    public void setNumero_tarjeta(int numero_tarjeta) {
+    public void setNumero_tarjeta(Integer numero_tarjeta) {
         this.numero_tarjeta = numero_tarjeta;
     }
 
-    public int getNip() {
+    public Integer getNip() {
         return nip;
     }
 
-    public void setNip(int nip) {
+    public void setNip(Integer nip) {
         this.nip = nip;
     }
 
-    public boolean isEstado() {
+    public Boolean isEstado() {
         return estado;
     }
 
-    public void setEstado(boolean estado) {
+    public void setEstado(Boolean estado) {
         this.estado = estado;
     }
 

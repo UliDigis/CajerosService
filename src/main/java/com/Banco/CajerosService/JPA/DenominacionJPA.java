@@ -14,26 +14,26 @@ public class DenominacionJPA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_denominacion")
-    private int id_denominacion;
+    private Integer id_denominacion;
 
     @Column(name = "valor_centavos")
-    private int valor_centavo;
+    private Integer valor_centavo;
 
     @Column(name = "tipo")
     private String tipo;
 
     @Column(name = "estado")
-    private boolean estado;
+    private Boolean estado;
 
-    public int getId_denominacion() {
+    public Integer getId_denominacion() {
         return id_denominacion;
     }
 
-    public int getValor_centavo() {
+    public Integer getValor_centavo() {
         return valor_centavo;
     }
 
-    public void setValor_centavo(int valor_centavo) {
+    public void setValor_centavo(Integer valor_centavo) {
         this.valor_centavo = valor_centavo;
     }
 
@@ -45,11 +45,11 @@ public class DenominacionJPA {
         this.tipo = tipo;
     }
 
-    public boolean isEstado() {
+    public Boolean isEstado() {
         return estado;
     }
 
-    public void setEstado(boolean estado) {
+    public void setEstado(Boolean estado) {
         this.estado = estado;
     }
 

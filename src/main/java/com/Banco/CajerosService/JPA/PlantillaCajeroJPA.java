@@ -11,17 +11,17 @@ import jakarta.persistence.Table;
 public class PlantillaCajeroJPA {
 
     @Column(name = "cantidad_estandar", nullable = false)
-    private int cantidad_estandar;
+    private Integer cantidad_estandar;
 
     @OneToOne(optional = false)
     @JoinColumn(name = "id_denominacion", nullable = false)
     private DenominacionJPA id_denominacion;
 
-    public int getCantidad_estandar() {
+    public Integer getCantidad_estandar() {
         return cantidad_estandar;
     }
 
-    public void setCantidad_estandar(int cantidad_estandar) {
+    public void setCantidad_estandar(Integer cantidad_estandar) {
         this.cantidad_estandar = cantidad_estandar;
     }
 

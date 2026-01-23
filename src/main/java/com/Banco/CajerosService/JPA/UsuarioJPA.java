@@ -1,40 +1,34 @@
 package com.Banco.CajerosService.JPA;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "usuario")
 public class UsuarioJPA {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario", nullable = false)
-    private int id_usuario;
-    
+    private Integer idUsuario;
+
     @Column(name = "nombre", nullable = false)
     private String nombre;
-    
-    @Column(name = "password_hash", nullable = false)
-    private String password;
-    
-    @Column(name = "estado", nullable = false)
-    private boolean estado;
-    
-    
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_rol")
-    public RolJPA id_rol;
 
-    public int getId_usuario() {
-        return id_usuario;
+    @Column(name = "correo", nullable = false, unique = true)
+    private String correo;
+
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
+
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_rol", nullable = false)
+    private RolJPA rol;
+
+    public Integer getIdUsuario() {
+        return idUsuario;
     }
 
     public String getNombre() {
@@ -45,23 +39,35 @@ public class UsuarioJPA {
         this.nombre = nombre;
     }
 
-    public String getPassword() {
-        return password;
+    public String getCorreo() {
+        return correo;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
-    public boolean isEstado() {
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public Boolean getEstado() {
         return estado;
     }
 
-    public void setEstado(boolean estado) {
+    public void setEstado(Boolean estado) {
         this.estado = estado;
     }
 
-    public RolJPA getId_rol() {
-        return id_rol;
+    public RolJPA getRol() {
+        return rol;
+    }
+
+    public void setRol(RolJPA rol) {
+        this.rol = rol;
     }
 }

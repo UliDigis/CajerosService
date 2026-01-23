@@ -14,15 +14,15 @@ public class CajeroJPA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cajero", nullable = false)
-    private int id_cajero;
+    private Integer id_cajero;
     
     @Column(name = "codigo_cajero", nullable = false)
     private String codigo_cajero;
     
     @Column(name = "estado", nullable = false)
-    private boolean estado;
+    private Boolean estado;
 
-    public int getId_cajero() {
+    public Integer getId_cajero() {
         return id_cajero;
     }
     
@@ -34,11 +34,11 @@ public class CajeroJPA {
         this.codigo_cajero = codigo_cajero;
     }
 
-    public boolean isEstado() {
+    public Boolean isEstado() {
         return estado;
     }
 
-    public void setEstado(boolean estado) {
+    public void setEstado(Boolean estado) {
         this.estado = estado;
     }
     
