@@ -9,42 +9,41 @@ import java.util.Objects;
 public class CajeroEfectivoId implements Serializable {
 
     @Column(name = "id_cajero", nullable = false)
-    private Integer id_cajero;
+    private Integer idCajero;
 
     @Column(name = "id_denominacion", nullable = false)
-    private Integer id_denominacion;
+    private Integer idDenominacion;
 
     public CajeroEfectivoId() {
     }
 
     public CajeroEfectivoId(Integer idCajero, Integer idDenominacion) {
-        this.id_cajero = idCajero;
-        this.id_denominacion = idDenominacion;
+        this.idCajero = idCajero;
+        this.idDenominacion = idDenominacion;
     }
 
     public Integer getIdCajero() {
-        return id_cajero;
+        return idCajero;
     }
 
     public Integer getIdDenominacion() {
-        return id_denominacion;
+        return idDenominacion;
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof CajeroEfectivoId)) {
+        if (!(o instanceof CajeroEfectivoId that)) {
             return false;
         }
-        CajeroEfectivoId that = (CajeroEfectivoId) object;
-        return Objects.equals(id_cajero, that.id_cajero)
-                && Objects.equals(id_denominacion, that.id_denominacion);
+        return Objects.equals(idCajero, that.idCajero)
+                && Objects.equals(idDenominacion, that.idDenominacion);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_cajero, id_denominacion);
+        return Objects.hash(idCajero, idDenominacion);
     }
 }

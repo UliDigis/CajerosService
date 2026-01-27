@@ -3,68 +3,49 @@ package com.Banco.CajerosService.JPA;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "usuario")
+@Table(name = "USUARIO")
 public class UsuarioJPA {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario", nullable = false)
-    private Integer idUsuario;
+    @Column(name = "ID_USUARIO")
+    private Long idUsuario;
 
-    @Column(name = "nombre", nullable = false)
-    private String nombre;
-
-    @Column(name = "correo", nullable = false, unique = true)
+    @Column(name = "CORREO")
     private String correo;
 
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    @Column(name = "ESTADO")
+    private String estado;
 
-    @Column(name = "estado", nullable = false)
-    private Boolean estado;
-
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_rol", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_ROL")
     private RolJPA rol;
 
-    public Integer getIdUsuario() {
+    public Long getIdUsuario() {
         return idUsuario;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 
     public String getCorreo() {
         return correo;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public Boolean getEstado() {
+    public String getEstado() {
         return estado;
-    }
-
-    public void setEstado(Boolean estado) {
-        this.estado = estado;
     }
 
     public RolJPA getRol() {
         return rol;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public void setRol(RolJPA rol) {

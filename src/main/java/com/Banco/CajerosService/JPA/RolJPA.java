@@ -1,46 +1,31 @@
 package com.Banco.CajerosService.JPA;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "rol")
+@Table(name = "ROL")
 public class RolJPA {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_rol", nullable = false)
-    private Integer id_rol;
-    
-    @Column(name = "nombre_rol", nullable = false)
-    private String nombre_rol;
-    
-    @Column(name = "estado", nullable = false)
-    private Boolean estado;
+    @Column(name = "ID_ROL")
+    private Long idRol;
 
-    public Integer getId_rol() {
-        return id_rol;
+    @Column(name = "NOMBRE_ROL")
+    private String nombreRol;
+
+    public Long getIdRol() {
+        return idRol;
     }
 
-    public String getNombre_rol() {
-        return nombre_rol;
+    public String getNombreRol() {
+        return nombreRol;
     }
 
-    public void setNombre_rol(String nombre_rol) {
-        this.nombre_rol = nombre_rol;
+    public void setIdRol(Long idRol) {
+        this.idRol = idRol;
     }
 
-    public Boolean isEstado() {
-        return estado;
+    public void setNombreRol(String nombreRol) {
+        this.nombreRol = nombreRol;
     }
-
-    public void setEstado(Boolean estado) {
-        this.estado = estado;
-    }
-    
-    
 }

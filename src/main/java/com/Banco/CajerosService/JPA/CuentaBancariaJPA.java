@@ -1,65 +1,68 @@
 package com.Banco.CajerosService.JPA;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cuenta_bancaria")
+@Table(name = "CUENTA_BANCARIA")
 public class CuentaBancariaJPA {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_cuenta", nullable = false)
-    private Integer id_cuenta;
+    @Column(name = "ID_CUENTA")
+    private Long idCuenta;
 
-    @Column(name = "numero_cuneta", nullable = false)
-    private String nombre_cuenta;
+    @Column(name = "NUMERO_CUENTA")
+    private String numeroCuenta;
 
-    @Column(name = "saldo_centavos", nullable = false)
-    private Integer saldo_cuenta;
+    // Si tu BD guarda NIP en cuenta, usa este campo:
+    // - si es hash, nómbralo NIP_HASH
+    // - si es texto, igual aquí cae
+    @Column(name = "NIP_HASH")
+    private String nipHash;
 
-    @Column(name = "estado", nullable = false)
-    private Boolean estado;
+    @Column(name = "ESTADO")
+    private Integer estado; 
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private UsuarioJPA id_usuario;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_USUARIO")
+    private UsuarioJPA usuario;
 
-    public Integer getId_cuenta() {
-        return id_cuenta;
+    public Long getIdCuenta() {
+        return idCuenta;
     }
 
-    public String getNombre_cuenta() {
-        return nombre_cuenta;
+    public String getNumeroCuenta() {
+        return numeroCuenta;
     }
 
-    public void setNombre_cuenta(String nombre_cuenta) {
-        this.nombre_cuenta = nombre_cuenta;
+    public String getNipHash() {
+        return nipHash;
     }
 
-    public Integer getSaldo_cuenta() {
-        return saldo_cuenta;
-    }
-
-    public void setSaldo_cuenta(Integer saldo_cuenta) {
-        this.saldo_cuenta = saldo_cuenta;
-    }
-
-    public Boolean isEstado() {
+    public Integer getEstado() {
         return estado;
     }
 
-    public void setEstado(Boolean estado) {
+    public UsuarioJPA getUsuario() {
+        return usuario;
+    }
+
+    public void setIdCuenta(Long idCuenta) {
+        this.idCuenta = idCuenta;
+    }
+
+    public void setNumeroCuenta(String numeroCuenta) {
+        this.numeroCuenta = numeroCuenta;
+    }
+
+    public void setNipHash(String nipHash) {
+        this.nipHash = nipHash;
+    }
+
+    public void setEstado(Integer estado) {
         this.estado = estado;
     }
 
-    public UsuarioJPA getId_usuario() {
-        return id_usuario;
+    public void setUsuario(UsuarioJPA usuario) {
+        this.usuario = usuario;
     }
 }

@@ -1,92 +1,61 @@
-package com.banco.cajerosservice.service;
+package com.Banco.CajerosService.Service;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
 
-    private final Key signingKey;
-    private final long expirationMs;
+    private final Key key;
+    private final long expirationMinutes;
+    private final String issuer;
 
     public JwtService(
             @Value("${security.jwt.secret}") String secret,
-            @Value("${security.jwt.expiration-ms:3600000}") long expirationMs
+            @Value("${security.jwt.expiration-minutes}") long expirationMinutes,
+            @Value("${security.jwt.issuer}") String issuer
     ) {
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.expirationMs = expirationMs;
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.expirationMinutes = expirationMinutes;
+        this.issuer = issuer;
     }
 
-    public String generateTokenUser(String correo, int idUsuario, int idRol) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id_usuario", idUsuario);
-        claims.put("id_rol", idRol);
-
+    public String generateToken(Long usuarioId, String role, Long cuentaId) {
         long now = System.currentTimeMillis();
+        Date issuedAt = new Date(now);
+        Date exp = new Date(now + (expirationMinutes * 60_000));
+
+        Map<String, Object> claims = new java.util.HashMap<>();
+        claims.put("usuarioId", usuarioId);
+        if (cuentaId != null) {
+            claims.put("cuentaId", cuentaId);
+        }
+        claims.put("role", role);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(correo)
-                .setId(UUID.randomUUID().toString())
-                .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + expirationMs))
-                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .setIssuer(issuer)
+                .setSubject(String.valueOf(usuarioId))
+                .setIssuedAt(issuedAt)
+                .setExpiration(exp)
+                .addClaims(claims)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean isTokenValid(String token) {
-        try {
-            Claims claims = getAllClaims(token);
-            Date exp = claims.getExpiration();
-            return exp != null && exp.after(new Date());
-        } catch (JwtException | IllegalArgumentException ex) {
-            return false;
-        }
-    }
-
-    public Claims getAllClaims(String token) {
+    public Claims parseClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
+                .setSigningKey(key)
+                .requireIssuer(issuer)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    public String getCorreoFromToken(String token) {
-        return getAllClaims(token).getSubject();
-    }
-
-    public int getIdUsuarioFromToken(String token) {
-        Object value = getAllClaims(token).get("id_usuario"); // <-- FIX
-        return (value instanceof Number n) ? n.intValue() : Integer.parseInt(String.valueOf(value));
-    }
-
-    public int getIdRolFromToken(String token) {
-        Object value = getAllClaims(token).get("id_rol");
-        return (value instanceof Number n) ? n.intValue() : Integer.parseInt(String.valueOf(value));
-    }
-
-    public boolean isExpired(String token) {
-        try {
-            Date exp = getAllClaims(token).getExpiration();
-            return exp == null || exp.before(new Date());
-        } catch (JwtException | IllegalArgumentException ex) {
-            return true;
-        }
-    }
-
-    public String getJtiFromToken(String token) {
-        return getAllClaims(token).getId();
     }
 }

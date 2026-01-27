@@ -1,31 +1,39 @@
 package com.Banco.CajerosService.JPA;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "platilla_carga_estandar")
 public class PlantillaCajeroJPA {
 
-    @Column(name = "cantidad_estandar", nullable = false)
-    private Integer cantidad_estandar;
+    @Id
+    @Column(name = "id_denominacion", nullable = false)
+    private Integer idDenominacion;
 
-    @OneToOne(optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId 
     @JoinColumn(name = "id_denominacion", nullable = false)
-    private DenominacionJPA id_denominacion;
+    private DenominacionJPA denominacion;
 
-    public Integer getCantidad_estandar() {
-        return cantidad_estandar;
+    @Column(name = "cantidad_estandar", nullable = false)
+    private Integer cantidadEstandar;
+
+    protected PlantillaCajeroJPA() {
     }
 
-    public void setCantidad_estandar(Integer cantidad_estandar) {
-        this.cantidad_estandar = cantidad_estandar;
+    public Integer getIdDenominacion() {
+        return idDenominacion;
     }
 
-    public DenominacionJPA getId_denominacion() {
-        return id_denominacion;
+    public DenominacionJPA getDenominacion() {
+        return denominacion;
+    }
+
+    public Integer getCantidadEstandar() {
+        return cantidadEstandar;
+    }
+
+    public void setCantidadEstandar(Integer cantidadEstandar) {
+        this.cantidadEstandar = cantidadEstandar;
     }
 }
