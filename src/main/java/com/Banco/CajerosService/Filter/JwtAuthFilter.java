@@ -12,8 +12,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -22,59 +24,67 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.jwtService = jwtService;
     }
 
+    /**
+     * Valida el JWT y carga el SecurityContext con ROLE_<ROL>. Solo excluye los
+     * endpoints de login para permitir autenticación inicial sin token.
+     */
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
+    protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String path = request.getServletPath();
+        String method = request.getMethod();
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        boolean isLogin
+                = "POST".equalsIgnoreCase(method)
+                && ("/auth/login".equals(path)
+                || "/auth/login/tarjeta".equals(path)
+                || "/auth/login/email".equals(path));
+
+        if (isLogin) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring("Bearer ".length()).trim();
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = header.substring(7).trim();
+        if (token.isEmpty()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
             Claims claims = jwtService.parseClaims(token);
 
-            Long usuarioId = toLong(claims.get("usuarioId"));
-            String role = (String) claims.get("role");
+            Long usuarioId = claims.get("usuarioId", Long.class);
+            String role = claims.get("role", String.class);
 
             if (usuarioId == null || role == null || role.isBlank()) {
-                SecurityContextHolder.clearContext();
                 filterChain.doFilter(request, response);
                 return;
             }
 
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
 
-            UsernamePasswordAuthenticationToken authentication
+            UsernamePasswordAuthenticationToken auth
                     = new UsernamePasswordAuthenticationToken(
-                            usuarioId,
+                            String.valueOf(usuarioId),
                             null,
                             List.of(authority)
                     );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
         } catch (Exception ex) {
             SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private Long toLong(Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (value instanceof Number n) {
-            return n.longValue();
-        }
-        return Long.valueOf(value.toString());
     }
 }

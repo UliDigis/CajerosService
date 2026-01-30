@@ -1,74 +1,61 @@
 package com.Banco.CajerosService.Service;
 
-import com.Banco.CajerosService.DTO.*;
-import com.Banco.CajerosService.JPA.CuentaBancariaJPA;
-import com.Banco.CajerosService.JPA.UsuarioJPA;
-import com.Banco.CajerosService.Repository.TarjetaAuthRepository;
-import org.springframework.beans.factory.annotation.Value;
+import java.util.Map;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.Banco.CajerosService.Repository.ICuentaBancariaRepository;
+
+import com.Banco.CajerosService.DAO.AuthDAO;
+import com.Banco.CajerosService.DTO.ApiRequest;
+import com.Banco.CajerosService.DTO.ApiResponse;
+import com.Banco.CajerosService.JPA.UsuarioJPA;
 
 @Service
 public class AuthService {
 
+    private final AuthDAO authDAO;
     private final JwtService jwtService;
-    private final TarjetaAuthRepository tarjetaAuthRepository;
-    private final ICuentaBancariaRepository cuentaRepo;
     private final PasswordEncoder passwordEncoder;
-    private final long expirationMinutes;
 
-    public AuthService(JwtService jwtService,
-            TarjetaAuthRepository tarjetaAuthRepository,
-            ICuentaBancariaRepository cuentaRepo,
-            PasswordEncoder passwordEncoder,
-            @Value("${security.jwt.expiration-minutes}") long expirationMinutes) {
+    public AuthService(AuthDAO authDAO,
+            JwtService jwtService,
+            PasswordEncoder passwordEncoder) {
+        this.authDAO = authDAO;
         this.jwtService = jwtService;
-        this.tarjetaAuthRepository = tarjetaAuthRepository;
-        this.cuentaRepo = cuentaRepo;
         this.passwordEncoder = passwordEncoder;
-        this.expirationMinutes = expirationMinutes;
     }
 
-    public LoginResponse loginByEmail(LoginEmailRequest request) {
-        throw new RuntimeException("Falta implementar loginByEmail");
-    }
+    /**
+     * Autenticación de sistema usando correo y contraseña. Genera un JWT de
+     * sistema con información de usuario y rol.
+     */
+    public ApiResponse loginSistema(ApiRequest request) {
 
-    public LoginResponse loginByTarjeta(LoginTarjetaRequest request) {
-        TarjetaAuthResult r = tarjetaAuthRepository.autenticarTarjeta(
-                request.getNumeroTarjeta(),
-                request.getNip()
+        Map<String, Object> data = request.getData();
+
+        String correo = (String) data.get("correo");
+        String password = (String) data.get("password");
+
+        if (correo == null || password == null) {
+            throw new RuntimeException("Parámetros requeridos");
+        }
+
+        UsuarioJPA usuario = authDAO.findUsuarioActivoByCorreo(correo);
+
+        if (usuario == null) {
+            throw new RuntimeException("Credenciales inválidas");
+        }
+
+        if (!passwordEncoder.matches(password, usuario.getPasswordHash())) {
+            throw new RuntimeException("Credenciales inválidas");
+        }
+
+        String token = jwtService.generateToken(
+                usuario.getIdUsuario(),
+                usuario.getRol().getNombreRol(),
+                null
         );
 
-        String token = jwtService.generateToken(r.getUsurioId(), r.getRolNombre(), r.getCuentaId());
-        return new LoginResponse(token, expirationMinutes * 60, r.getUsurioId(), r.getCuentaId(), r.getRolNombre());
-    }
-
-    public LoginResponse loginByCuenta(LoginCuentaRequest request) {
-        CuentaBancariaJPA cuenta = cuentaRepo.findByNumeroCuenta(request.getNumeroCuenta())
-                .orElseThrow(() -> new RuntimeException("Cuenta no existe"));
-
-        if (cuenta.getEstado() == null) {
-            throw new RuntimeException("Cuenta inactiva");
-        }
-
-        UsuarioJPA usuario = cuenta.getUsuario();
-        if (usuario == null) {
-            throw new RuntimeException("Cuenta sin usuario");
-        }
-        if (usuario.getEstado() == null || !usuario.getEstado().equalsIgnoreCase("ACTIVO")) {
-            throw new RuntimeException("Usuario inactivo");
-        }
-
-        boolean nipOk = passwordEncoder.matches(request.getNip(), cuenta.getNipHash());
-
-        if (!nipOk) {
-            throw new RuntimeException("NIP incorrecto");
-        }
-
-        String role = usuario.getRol() != null ? usuario.getRol().getNombreRol() : "CLIENTE";
-
-        String token = jwtService.generateToken(usuario.getIdUsuario(), role, cuenta.getIdCuenta());
-        return new LoginResponse(token, expirationMinutes * 60, usuario.getIdUsuario(), cuenta.getIdCuenta(), role);
+        return ApiResponse.ok(Map.of("token", token));
     }
 }

@@ -10,14 +10,17 @@ public class UsuarioJPA {
     @Column(name = "ID_USUARIO")
     private Long idUsuario;
 
-    @Column(name = "CORREO")
+    @Column(name = "CORREO", nullable = false)
     private String correo;
 
-    @Column(name = "ESTADO")
-    private String estado;
+    @Column(name = "PASSWORD_HASH", nullable = false)
+    private String passwordHash;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_ROL")
+    @Column(name = "ESTADO", nullable = false)
+    private Integer estado;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_ROL", nullable = false)
     private RolJPA rol;
 
     public Long getIdUsuario() {
@@ -28,7 +31,11 @@ public class UsuarioJPA {
         return correo;
     }
 
-    public String getEstado() {
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public Integer getEstado() {
         return estado;
     }
 
@@ -44,7 +51,11 @@ public class UsuarioJPA {
         this.correo = correo;
     }
 
-    public void setEstado(String estado) {
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public void setEstado(Integer estado) {
         this.estado = estado;
     }
 
