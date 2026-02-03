@@ -6,23 +6,22 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.Banco.CajerosService.DTO.ApiResponse;
-import com.Banco.CajerosService.Repository.CajeroConsultaRepository;
+import com.Banco.CajerosService.Repository.CajeroSpExecutor;
 
 @Service
 public class CajeroConsultaService {
 
-    private final CajeroConsultaRepository repo;
+    private final CajeroSpExecutor cajeroSp;
 
-    public CajeroConsultaService(CajeroConsultaRepository repo) {
-        this.repo = repo;
+    public CajeroConsultaService(CajeroSpExecutor cajeroSp) {
+        this.cajeroSp = cajeroSp;
     }
 
     /**
-     * Retorna el listado de cajeros con saldo disponible en un formato dinámico
-     * (Map) para evitar DTOs específicos por pantalla.
+     * Retorna listado de cajeros consultando el SP.
      */
     public ApiResponse obtenerCajeros() {
-        List<Map<String, Object>> data = repo.obtenerCajeros();
+        List<Map<String, Object>> data = cajeroSp.obtenerCajeros();
         return ApiResponse.ok(data);
     }
 }

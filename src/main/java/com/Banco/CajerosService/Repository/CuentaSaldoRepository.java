@@ -12,7 +12,6 @@ import jakarta.persistence.StoredProcedureQuery;
 
 @Repository
 public class CuentaSaldoRepository {
-
     @PersistenceContext
     private EntityManager entityManager;
 

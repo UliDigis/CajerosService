@@ -1,31 +1,26 @@
 package com.Banco.CajerosService.JPA;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cajero")
+@Table(name = "CAJERO")
 public class CajeroJPA {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_cajero", nullable = false)
+    @Column(name = "ID_CAJERO", nullable = false)
     private Integer id_cajero;
-    
-    @Column(name = "codigo_cajero", nullable = false)
+
+    @Column(name = "CODIGO_CAJERO", nullable = false, length = 30)
     private String codigo_cajero;
-    
-    @Column(name = "estado", nullable = false)
-    private Boolean estado;
+
+    @Column(name = "ESTADO", nullable = false)
+    private Integer estado;
 
     public Integer getId_cajero() {
         return id_cajero;
     }
-    
+
     public String getCodigo_cajero() {
         return codigo_cajero;
     }
@@ -34,14 +29,11 @@ public class CajeroJPA {
         this.codigo_cajero = codigo_cajero;
     }
 
-    public Boolean isEstado() {
+    public Integer getEstado() {
         return estado;
     }
 
-    public void setEstado(Boolean estado) {
+    public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    
-    
-    
 }
