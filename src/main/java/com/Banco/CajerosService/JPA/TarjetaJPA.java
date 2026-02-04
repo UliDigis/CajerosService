@@ -2,6 +2,7 @@ package com.Banco.CajerosService.JPA;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,57 +10,77 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * Entidad de Tarjeta Bancaria
+ * Card Entity - Tarjeta con NIP encriptado
+ */
 @Entity
-@Table(name = "tarjeta")
+@Table(name = "TARJETA")
 public class TarjetaJPA {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_tarjeta", nullable = false)
-    private Integer id_tarjeta;
+    @Column(name = "ID_TARJETA", nullable = false)
+    private Long idTarjeta;
 
-    @Column(name = "numero_tarjeta")
-    private Integer numero_tarjeta;
+    @Column(name = "NUMERO_TARJETA", nullable = false, length = 8)
+    private String numeroTarjeta;  // String de 8 dígitos (ej: "90000001")
 
-    @Column(name = "nip_hash")
-    private Integer nip;
+    @Column(name = "NIP_HASH", nullable = false)
+    private String nipHash;  // String con hash Bcrypt
 
-    @Column(name = "estado")
-    private Boolean estado;
+    @Column(name = "ESTADO", nullable = false)
+    private Integer estado;  // 0 = inactivo, 1 = activo
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_cuenta", nullable = false)
-    private CuentaBancariaJPA id_cuenta;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ID_CUENTA", nullable = false)
+    private CuentaBancariaJPA cuenta;
 
-    public Integer getId_tarjeta() {
-        return id_tarjeta;
+    // Constructores
+    public TarjetaJPA() {
     }
 
-    public Integer getNumero_tarjeta() {
-        return numero_tarjeta;
+    public TarjetaJPA(String numeroTarjeta, String nipHash, Integer estado, CuentaBancariaJPA cuenta) {
+        this.numeroTarjeta = numeroTarjeta;
+        this.nipHash = nipHash;
+        this.estado = estado;
+        this.cuenta = cuenta;
     }
 
-    public void setNumero_tarjeta(Integer numero_tarjeta) {
-        this.numero_tarjeta = numero_tarjeta;
+    // Getters y Setters
+    public Long getIdTarjeta() {
+        return idTarjeta;
     }
 
-    public Integer getNip() {
-        return nip;
+    public String getNumeroTarjeta() {
+        return numeroTarjeta;
     }
 
-    public void setNip(Integer nip) {
-        this.nip = nip;
+    public void setNumeroTarjeta(String numeroTarjeta) {
+        this.numeroTarjeta = numeroTarjeta;
     }
 
-    public Boolean isEstado() {
+    public String getNipHash() {
+        return nipHash;
+    }
+
+    public void setNipHash(String nipHash) {
+        this.nipHash = nipHash;
+    }
+
+    public Integer getEstado() {
         return estado;
     }
 
-    public void setEstado(Boolean estado) {
+    public void setEstado(Integer estado) {
         this.estado = estado;
     }
 
-    public CuentaBancariaJPA getId_cuenta() {
-        return id_cuenta;
+    public CuentaBancariaJPA getCuenta() {
+        return cuenta;
+    }
+
+    public void setCuenta(CuentaBancariaJPA cuenta) {
+        this.cuenta = cuenta;
     }
 }

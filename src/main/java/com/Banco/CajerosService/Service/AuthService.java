@@ -4,12 +4,17 @@ import java.util.Map;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.Banco.CajerosService.DAO.AuthDAO;
 import com.Banco.CajerosService.DTO.ApiRequest;
 import com.Banco.CajerosService.DTO.ApiResponse;
 import com.Banco.CajerosService.JPA.UsuarioJPA;
 
+/**
+ * Servicio de autenticación
+ * Authentication Service
+ */
 @Service
 public class AuthService {
 
@@ -28,7 +33,10 @@ public class AuthService {
     /**
      * Autenticación de sistema usando correo y contraseña. Genera un JWT de
      * sistema con información de usuario y rol.
+     * 
+     * System Authentication using email and password. Generates JWT token.
      */
+    @Transactional(readOnly = true)
     public ApiResponse loginSistema(ApiRequest request) {
 
         Map<String, Object> data = request.getData();
@@ -53,8 +61,7 @@ public class AuthService {
         String token = jwtService.generateToken(
                 usuario.getIdUsuario(),
                 usuario.getRol().getNombreRol(),
-                null
-        );
+                null);
 
         return ApiResponse.ok(Map.of("token", token));
     }

@@ -1,40 +1,50 @@
 package com.Banco.CajerosService.JPA;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+/**
+ * Entidad de Denominación (Billetes y Monedas)
+ * Denomination Entity (Bills and Coins)
+ */
 @Entity
-@Table(name = "denominacion")
+@Table(name = "DENOMINACION")
 public class DenominacionJPA {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_denominacion")
-    private Integer id_denominacion;
+    @Column(name = "ID_DENOMINACION", nullable = false)
+    private Long idDenominacion;
 
-    @Column(name = "valor_centavos")
-    private Integer valor_centavo;
+    @Column(name = "VALOR_CENTAVOS", nullable = false, unique = true)
+    private Long valorCentavos;  // Long, NO Integer (centavos)
 
-    @Column(name = "tipo")
-    private String tipo;
+    @Column(name = "TIPO", nullable = false, length = 10)
+    private String tipo;  // BILLETE o MONEDA
 
-    @Column(name = "estado")
-    private Boolean estado;
+    @Column(name = "ESTADO", nullable = false)
+    private Integer estado;  // 0 = inactivo, 1 = activo
 
-    public Integer getId_denominacion() {
-        return id_denominacion;
+    // Constructores
+    public DenominacionJPA() {
     }
 
-    public Integer getValor_centavo() {
-        return valor_centavo;
+    public DenominacionJPA(Long valorCentavos, String tipo, Integer estado) {
+        this.valorCentavos = valorCentavos;
+        this.tipo = tipo;
+        this.estado = estado;
     }
 
-    public void setValor_centavo(Integer valor_centavo) {
-        this.valor_centavo = valor_centavo;
+    // Getters y Setters
+    public Long getIdDenominacion() {
+        return idDenominacion;
+    }
+
+    public Long getValorCentavos() {
+        return valorCentavos;
+    }
+
+    public void setValorCentavos(Long valorCentavos) {
+        this.valorCentavos = valorCentavos;
     }
 
     public String getTipo() {
@@ -45,12 +55,11 @@ public class DenominacionJPA {
         this.tipo = tipo;
     }
 
-    public Boolean isEstado() {
+    public Integer getEstado() {
         return estado;
     }
 
-    public void setEstado(Boolean estado) {
+    public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
 }

@@ -2,6 +2,10 @@ package com.Banco.CajerosService.JPA;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad de Cajero (ATM)
+ * ATM Entity
+ */
 @Entity
 @Table(name = "CAJERO")
 public class CajeroJPA {
@@ -9,24 +13,34 @@ public class CajeroJPA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_CAJERO", nullable = false)
-    private Integer id_cajero;
+    private Long idCajero;  // Long, NO Integer
 
-    @Column(name = "CODIGO_CAJERO", nullable = false, length = 30)
-    private String codigo_cajero;
+    @Column(name = "CODIGO_CAJERO", nullable = false, unique = true, length = 30)
+    private String codigoCajero;
 
     @Column(name = "ESTADO", nullable = false)
-    private Integer estado;
+    private Integer estado;  // 0 = inactivo, 1 = activo
 
-    public Integer getId_cajero() {
-        return id_cajero;
+    // Constructores
+    public CajeroJPA() {
     }
 
-    public String getCodigo_cajero() {
-        return codigo_cajero;
+    public CajeroJPA(String codigoCajero, Integer estado) {
+        this.codigoCajero = codigoCajero;
+        this.estado = estado;
     }
 
-    public void setCodigo_cajero(String codigo_cajero) {
-        this.codigo_cajero = codigo_cajero;
+    // Getters y Setters
+    public Long getIdCajero() {
+        return idCajero;
+    }
+
+    public String getCodigoCajero() {
+        return codigoCajero;
+    }
+
+    public void setCodigoCajero(String codigoCajero) {
+        this.codigoCajero = codigoCajero;
     }
 
     public Integer getEstado() {

@@ -5,28 +5,32 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * ID Compuesto para CajeroEfectivo
+ * Composite ID for CajeroEfectivo
+ */
 @Embeddable
 public class CajeroEfectivoId implements Serializable {
 
-    @Column(name = "id_cajero", nullable = false)
-    private Integer idCajero;
+    @Column(name = "ID_CAJERO", nullable = false)
+    private Long idCajero;
 
-    @Column(name = "id_denominacion", nullable = false)
-    private Integer idDenominacion;
+    @Column(name = "ID_DENOMINACION", nullable = false)
+    private Long idDenominacion;
 
     public CajeroEfectivoId() {
     }
 
-    public CajeroEfectivoId(Integer idCajero, Integer idDenominacion) {
+    public CajeroEfectivoId(Long idCajero, Long idDenominacion) {
         this.idCajero = idCajero;
         this.idDenominacion = idDenominacion;
     }
 
-    public Integer getIdCajero() {
+    public Long getIdCajero() {
         return idCajero;
     }
 
-    public Integer getIdDenominacion() {
+    public Long getIdDenominacion() {
         return idDenominacion;
     }
 

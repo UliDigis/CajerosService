@@ -1,44 +1,60 @@
 package com.Banco.CajerosService.Service;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.Banco.CajerosService.DAO.ICajeroAdminRepository;
 import com.Banco.CajerosService.DTO.ApiResponse;
+import com.Banco.CajerosService.Repository.StoredProcedureExecutor;
 
+/**
+ * Servicio de administración de Cajeros
+ * ATM Administration Service
+ */
 @Service
 public class CajeroAdminService {
 
-    private final ICajeroAdminRepository cajeroAdminRepository;
+    private final StoredProcedureExecutor spExecutor;
 
-    public CajeroAdminService(ICajeroAdminRepository cajeroAdminRepository) {
-        this.cajeroAdminRepository = cajeroAdminRepository;
+    public CajeroAdminService(StoredProcedureExecutor spExecutor) {
+        this.spExecutor = spExecutor;
     }
 
     /**
-     * Recarga un cajero por CODIGO_CAJERO invocando SP_RECARGAR_CAJERO. El SP
-     * no hace COMMIT, por eso este método va en transacción para confirmar
-     * cambios.
+     * Recarga un cajero específico con la plantilla estándar
+     * 
+     * @param codigoCajero Código del cajero (ej: "ATM-001")
+     * @return ApiResponse exitosa o con error
      */
     @Transactional
-    public ApiResponse recargarCajero(String codigo) {
-        if (codigo == null || codigo.trim().isEmpty()) {
-            return ApiResponse.error("Código de cajero requerido");
-        }
+    public ApiResponse recargarCajero(String codigoCajero) {
+        try {
+            if (codigoCajero == null || codigoCajero.trim().isEmpty()) {
+                return ApiResponse.error("Código de cajero requerido");
+            }
 
-        cajeroAdminRepository.recargarCajero(codigo.trim());
-        return ApiResponse.ok(Map.of("codigo", codigo.trim(), "status", "RECARGADO"));
+            spExecutor.recargarCajero(codigoCajero);
+
+            return ApiResponse.ok("Cajero recargado exitosamente");
+
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     /**
-     * Recarga todos los cajeros activos invocando SP_RECARGAR_TODOS_CAJEROS. El
-     * SP no hace COMMIT, por eso este método va en transacción.
+     * Recarga todos los cajeros activos con la plantilla estándar
+     * 
+     * @return ApiResponse exitosa o con error
      */
     @Transactional
     public ApiResponse recargarTodos() {
-        cajeroAdminRepository.recargarTodos();
-        return ApiResponse.ok(Map.of("status", "RECARGA_MASIVA_REALIZADA"));
+        try {
+            spExecutor.recargarTodosCajeros();
+
+            return ApiResponse.ok("Todos los cajeros han sido recargados exitosamente");
+
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 }

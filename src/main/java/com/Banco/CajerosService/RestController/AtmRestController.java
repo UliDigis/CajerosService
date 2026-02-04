@@ -1,4 +1,4 @@
-package com.Banco.CajerosService.Controller;
+package com.Banco.CajerosService.RestController;
 
 import org.springframework.web.bind.annotation.*;
 

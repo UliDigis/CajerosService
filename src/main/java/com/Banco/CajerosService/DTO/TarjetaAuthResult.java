@@ -14,7 +14,7 @@ public class TarjetaAuthResult {
         this.rolNombre = rolNombre;
     }
 
-    public Long getUsurioId() {
+    public Long getUsuarioId() {
         return usuarioId;
     }
 

@@ -1,80 +1,106 @@
 package com.Banco.CajerosService.Service;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.Banco.CajerosService.DTO.ApiRequest;
 import com.Banco.CajerosService.DTO.ApiResponse;
+import com.Banco.CajerosService.DTO.Result;
 import com.Banco.CajerosService.DTO.TarjetaAuthResult;
-import com.Banco.CajerosService.Repository.AtmSpExecutor;
+import com.Banco.CajerosService.Repository.StoredProcedureExecutor;
 
+import java.util.Map;
+
+/**
+ * Servicio de operaciones ATM
+ * ATM Operations Service
+ */
 @Service
 public class AtmOperacionService {
 
-    private final AtmSpExecutor atmSp;
+    private final StoredProcedureExecutor spExecutor;
 
-    public AtmOperacionService(AtmSpExecutor atmSp) {
-        this.atmSp = atmSp;
+    public AtmOperacionService(StoredProcedureExecutor spExecutor) {
+        this.spExecutor = spExecutor;
     }
 
     /**
-     * Autentica tarjeta con SP_AUTENTICAR_TARJETA.
+     * Autentica tarjeta con NIP encriptado
+     * 
+     * @param request Debe contener: tarjeta (String), nip (String)
+     * @return ApiResponse con datos de autenticación
      */
+    @Transactional(readOnly = true)
     public ApiResponse autenticar(ApiRequest request) {
-        Map<String, Object> data = request.getData();
+        try {
+            Map<String, Object> data = request.getData();
 
-        String tarjeta = data.get("tarjeta") == null ? null : data.get("tarjeta").toString();
-        String nip = data.get("nip") == null ? null : data.get("nip").toString();
+            String numeroTarjeta = (String) data.get("tarjeta");
+            String nipPlano = (String) data.get("nip");
 
-        if (tarjeta == null || nip == null) {
-            throw new IllegalArgumentException("Parámetros requeridos: tarjeta, nip");
+            if (numeroTarjeta == null || nipPlano == null) {
+                return ApiResponse.error("Tarjeta y NIP requeridos");
+            }
+
+            // El SP valida el NIP, NO lo hacemos aquí
+            TarjetaAuthResult resultado = spExecutor.autenticarTarjeta(numeroTarjeta, nipPlano);
+
+            return ApiResponse.ok(resultado);
+
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
         }
-
-        TarjetaAuthResult r = atmSp.autenticarTarjeta(tarjeta, nip);
-
-        return ApiResponse.ok(Map.of(
-                "idCuenta", r.getCuentaId(),
-                "idUsuario", r.getUsurioId(),
-                "idRol", r.getRolId(),
-                "rol", r.getRolNombre()
-        ));
     }
 
     /**
-     * Obtiene saldo con SP_OBTENER_SALDO_CUENTA.
+     * Obtiene saldo de la cuenta
+     * 
+     * @param idCuenta ID de la cuenta
+     * @return ApiResponse con saldo en centavos
      */
+    @Transactional(readOnly = true)
     public ApiResponse saldo(Long idCuenta) {
-        return ApiResponse.ok(atmSp.obtenerSaldo(idCuenta));
+        try {
+            Map<String, Object> resultado = spExecutor.obtenerSaldoCuenta(idCuenta);
+            return ApiResponse.ok(resultado);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     /**
-     * Retira efectivo con SP_RETIRAR.
+     * Realiza retiro de efectivo
+     * 
+     * @param request Debe contener: codigoCajero, tarjeta, nip, montoCentavos
+     * @return ApiResponse con saldo restante y desglose de billetes
      */
+    @Transactional // ← IMPORTANTE: Retiros requieren transacción
     public ApiResponse retirar(ApiRequest request) {
-        Map<String, Object> data = request.getData();
+        try {
+            Map<String, Object> data = request.getData();
 
-        String codigoCajero = data.get("codigoCajero") == null ? null : data.get("codigoCajero").toString();
-        String tarjeta = data.get("tarjeta") == null ? null : data.get("tarjeta").toString();
-        String nip = data.get("nip") == null ? null : data.get("nip").toString();
+            String codigoCajero = (String) data.get("codigoCajero");
+            String numeroTarjeta = (String) data.get("tarjeta");
+            String nipPlano = (String) data.get("nip");
+            Long montoCentavos = ((Number) data.get("montoCentavos")).longValue();
 
-        Object montoRaw = data.get("montoCentavos");
-        Long montoCentavos = montoRaw == null ? null : Long.valueOf(montoRaw.toString());
+            if (codigoCajero == null || numeroTarjeta == null || nipPlano == null || montoCentavos == null) {
+                return ApiResponse.error("Parámetros incompletos para retiro");
+            }
 
-        if (codigoCajero == null || tarjeta == null || nip == null || montoCentavos == null) {
-            throw new IllegalArgumentException("Parámetros requeridos: codigoCajero, tarjeta, nip, montoCentavos");
+            // Ejecuta el SP que hace toda la validación
+            Result resultado = spExecutor.retirar(codigoCajero, numeroTarjeta, nipPlano, montoCentavos);
+
+            // Crear respuesta final con estructura correcta
+            Map<String, Object> responseData = new java.util.HashMap<>();
+            responseData.put("saldoRestanteCentavos", resultado.getSaldoRestanteCentavos());
+            responseData.put("desglose", resultado.getDesglose());
+
+            return ApiResponse.ok(responseData);
+
+        } catch (Exception e) {
+            // Si falla, se hace ROLLBACK automático
+            return ApiResponse.error(e.getMessage());
         }
-
-        Map<String, Object> r = atmSp.retirar(codigoCajero, tarjeta, nip, montoCentavos);
-
-        return ApiResponse.ok(Map.of(
-                "codigoCajero", codigoCajero,
-                "montoCentavos", montoCentavos,
-                "monto", BigDecimal.valueOf(montoCentavos).movePointLeft(2),
-                "saldoRestanteCentavos", r.get("saldoRestanteCentavos"),
-                "saldoRestante", r.get("saldoRestante"),
-                "desglose", r.get("desglose")
-        ));
     }
 }

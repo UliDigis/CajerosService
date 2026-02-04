@@ -1,32 +1,35 @@
 package com.Banco.CajerosService.Configuration;
 
-import com.Banco.CajerosService.DTO.Result;
 import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+/**
+ * Configuración de DataSource para conexión a Oracle
+ * DataSource Configuration for Oracle Connection
+ */
 @Configuration
 public class DataSourcesConfig {
     
+    /**
+     * Bean de DataSource para Oracle Database
+     * DataSource Bean for Oracle - jdbc:oracle:thin driver
+     * 
+     * @return DataSource configurado y listo para uso
+     */
     @Bean
-    public DataSource dataSource(){
-        Result resultDataSource = new Result();
+    public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         
-        try{
-           
-            dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:orcl");
-            dataSource.setUsername("UBancoSep2025");
-            dataSource.setPassword("password1");
-            resultDataSource.correct = true;
-            resultDataSource.message = "Conexion Realizada correctamente";
-            
-        }catch(Exception ex){
-            resultDataSource.message = ex.getMessage();
-        }
+        // Driver de Oracle JDBC
+        dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+        
+        // Configuración de conexión Oracle
+        dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:orcl");
+        dataSource.setUsername("UBancoSep2025");
+        dataSource.setPassword("password1");
         
         return dataSource;
     }
-    
 }

@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import com.Banco.CajerosService.DTO.ApiResponse;
 import com.Banco.CajerosService.Service.CajeroAdminService;
 
+/**
+ * RestController para administración de Cajeros
+ * ATM Admin RestController
+ */
 @RestController
 @RequestMapping("/admin/cajeros")
 public class CajeroAdminRestController {
@@ -17,7 +21,11 @@ public class CajeroAdminRestController {
     }
 
     /**
-     * Recarga un cajero específico por CODIGO_CAJERO (SP_RECARGAR_CAJERO).
+     * Recarga un cajero específico por CODIGO_CAJERO
+     * Ejecuta SP_RECARGAR_CAJERO
+     * 
+     * @param codigo Código del cajero (ej: "ATM-001")
+     * @return ApiResponse exitosa o con error
      */
     @PostMapping("/{codigo}/recargar")
     public ResponseEntity<ApiResponse> recargarCajero(@PathVariable("codigo") String codigo) {
@@ -25,7 +33,10 @@ public class CajeroAdminRestController {
     }
 
     /**
-     * Recarga todos los cajeros activos (SP_RECARGAR_TODOS_CAJEROS).
+     * Recarga todos los cajeros activos
+     * Ejecuta SP_RECARGAR_TODOS_CAJEROS
+     * 
+     * @return ApiResponse exitosa o con error
      */
     @PostMapping("/recargar-todos")
     public ResponseEntity<ApiResponse> recargarTodos() {
