@@ -44,11 +44,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/atm/autenticar").permitAll() // ← Login sin token
-                        .requestMatchers("/atm/**").authenticated() // ← Retiros requieren token
-                        .requestMatchers("/cajero-admin/**").hasAnyRole("ADMIN") // ← Solo admin
+                        .requestMatchers("/atm/autenticar").permitAll()  
+                        .requestMatchers("/atm/**").authenticated() 
+                        .requestMatchers("/cajero-admin/**").hasAnyRole("ADMIN")  
                         .anyRequest().permitAll())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // ← DESCOMENTA
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); 
 
         return http.build();
     }
