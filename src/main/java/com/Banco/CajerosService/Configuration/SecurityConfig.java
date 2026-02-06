@@ -43,6 +43,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+<<<<<<< HEAD
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/atm/autenticar").permitAll() // ← Login sin token
@@ -54,6 +55,18 @@ public class SecurityConfig {
 
         return http.build();
     }
+=======
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/atm/autenticar").permitAll()  
+                        .requestMatchers("/atm/**").authenticated() 
+                        .requestMatchers("/cajero-admin/**").hasAnyRole("ADMIN")  
+                        .anyRequest().permitAll())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); 
+
+        return http.build();
+    }
+>>>>>>> f73ea8b02f9170365a7e3e664f5279c4d0d42255
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
