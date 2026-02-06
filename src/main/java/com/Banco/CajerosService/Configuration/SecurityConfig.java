@@ -33,17 +33,18 @@ public class SecurityConfig {
     }
 
     /**
-     * Configuración de seguridad SOLO para pruebas: - Permite cualquier request
-     * sin autenticación. - No registra el filtro JWT para evitar bloqueos
-     * 401/403. - Mantiene CORS habilitado para consumir desde el cliente o
-     * Postman.
+     * Configuración de seguridad:
+     * - CORS habilitado para consumo desde cliente/Postman.
+     * - /atm/autenticar público (emite JWT).
+     * - /atm/** requiere JWT.
+     * - /admin/cajeros/** requiere rol ADMIN.
+     * - GET /usuarios/** requiere rol ADMIN.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-<<<<<<< HEAD
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/atm/autenticar").permitAll() // ← Login sin token
@@ -55,18 +56,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-=======
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/atm/autenticar").permitAll()  
-                        .requestMatchers("/atm/**").authenticated() 
-                        .requestMatchers("/cajero-admin/**").hasAnyRole("ADMIN")  
-                        .anyRequest().permitAll())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); 
-
-        return http.build();
-    }
->>>>>>> f73ea8b02f9170365a7e3e664f5279c4d0d42255
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
