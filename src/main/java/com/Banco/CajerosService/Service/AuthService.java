@@ -58,11 +58,14 @@ public class AuthService {
             throw new RuntimeException("Credenciales inválidas");
         }
 
+        String nombre = (usuario.getNombres() + " " + usuario.getApellidos()).trim();
+
         String token = jwtService.generateToken(
                 usuario.getIdUsuario(),
                 usuario.getRol().getNombreRol(),
-                null);
+                null,
+                nombre);
 
-        return ApiResponse.ok(Map.of("token", token));
+        return ApiResponse.ok(Map.of("token", token, "nombre", nombre));
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -46,7 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/atm/autenticar").permitAll() // ← Login sin token
                         .requestMatchers("/atm/**").authenticated() // ← Retiros requieren token
-                        .requestMatchers("/cajero-admin/**").hasAnyRole("ADMIN") // ← Solo admin
+                        .requestMatchers(HttpMethod.GET, "/usuarios/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/admin/cajeros/**", "/cajero-admin/**").hasAnyRole("ADMIN") // ← Solo admin
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // ← DESCOMENTA
 

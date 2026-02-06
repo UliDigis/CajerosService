@@ -7,7 +7,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -63,7 +65,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Claims claims = jwtService.parseClaims(token);
 
             Long usuarioId = claims.get("usuarioId", Long.class);
+            Long cuentaId = claims.get("cuentaId", Long.class);
             String role = claims.get("role", String.class);
+            String nombre = claims.get("nombre", String.class);
 
             if (usuarioId == null || role == null || role.isBlank()) {
                 filterChain.doFilter(request, response);
@@ -78,6 +82,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             null,
                             List.of(authority)
                     );
+
+            Map<String, Object> details = new HashMap<>();
+            details.put("usuarioId", usuarioId);
+            details.put("cuentaId", cuentaId);
+            details.put("role", role);
+            details.put("nombre", nombre);
+            auth.setDetails(details);
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 

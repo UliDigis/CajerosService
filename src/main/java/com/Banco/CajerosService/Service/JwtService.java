@@ -29,6 +29,13 @@ public class JwtService {
     }
 
     public String generateToken(Long usuarioId, String role, Long cuentaId) {
+        return generateToken(usuarioId, role, cuentaId, null);
+    }
+
+    /**
+     * Genera token con claims estándar y nombre para mostrar en UI.
+     */
+    public String generateToken(Long usuarioId, String role, Long cuentaId, String nombre) {
         long now = System.currentTimeMillis();
         Date issuedAt = new Date(now);
         Date exp = new Date(now + (expirationMinutes * 60_000));
@@ -39,6 +46,9 @@ public class JwtService {
             claims.put("cuentaId", cuentaId);
         }
         claims.put("role", role);
+        if (nombre != null && !nombre.isBlank()) {
+            claims.put("nombre", nombre);
+        }
 
         return Jwts.builder()
                 .setIssuer(issuer)

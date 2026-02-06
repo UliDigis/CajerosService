@@ -29,4 +29,19 @@ public class AuthDAO {
 
         return query.getResultStream().findFirst().orElse(null);
     }
+
+    /**
+     * Busca un usuario activo por ID. Retorna null si no existe o está inactivo.
+     */
+    public UsuarioJPA findUsuarioActivoById(Long idUsuario) {
+
+        TypedQuery<UsuarioJPA> query = entityManager.createQuery(
+                "SELECT u FROM UsuarioJPA u WHERE u.idUsuario = :idUsuario AND u.estado = 1",
+                UsuarioJPA.class
+        );
+
+        query.setParameter("idUsuario", idUsuario);
+
+        return query.getResultStream().findFirst().orElse(null);
+    }
 }

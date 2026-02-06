@@ -58,7 +58,7 @@ public class StoredProcedureExecutor {
             Long idRol = (Long) query.getOutputParameterValue("o_id_rol");
             String nombreRol = (String) query.getOutputParameterValue("o_nombre_rol");
 
-            return new TarjetaAuthResult(idCuenta, idUsuario, idRol, nombreRol);
+            return new TarjetaAuthResult(idUsuario, idCuenta, idRol, nombreRol);
 
         } catch (Exception e) {
             throw new RuntimeException("Error en autenticación de tarjeta: " + e.getMessage(), e);
@@ -211,7 +211,8 @@ public class StoredProcedureExecutor {
             query.registerStoredProcedureParameter("o_result", void.class, ParameterMode.REF_CURSOR);
 
             List<Map<String, Object>> cajeros = new ArrayList<>();
-            
+            query.execute();
+
             Object resultObj = query.getOutputParameterValue("o_result");
             
             if (resultObj instanceof ResultSet) {
@@ -232,6 +233,41 @@ public class StoredProcedureExecutor {
 
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener cajeros: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Ejecuta: SP_OBTENER_USUARIOS
+     * Obtiene lista de todos los usuarios (sin password_hash) con su rol.
+     */
+    public List<Map<String, Object>> obtenerUsuarios() {
+        try {
+            StoredProcedureQuery query = entityManager.createStoredProcedureQuery("SP_OBTENER_USUARIOS");
+            query.registerStoredProcedureParameter("o_result", void.class, ParameterMode.REF_CURSOR);
+            query.execute();
+
+            List<Map<String, Object>> usuarios = new ArrayList<>();
+
+            Object resultObj = query.getOutputParameterValue("o_result");
+            if (resultObj instanceof ResultSet) {
+                ResultSet rs = (ResultSet) resultObj;
+                while (rs.next()) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("idUsuario", rs.getLong("ID_USUARIO"));
+                    map.put("idRol", rs.getLong("ID_ROL"));
+                    map.put("nombreRol", rs.getString("NOMBRE_ROL"));
+                    map.put("nombres", rs.getString("NOMBRES"));
+                    map.put("apellidos", rs.getString("APELLIDOS"));
+                    map.put("correo", rs.getString("CORREO"));
+                    map.put("estado", rs.getLong("ESTADO"));
+                    usuarios.add(map);
+                }
+                rs.close();
+            }
+
+            return usuarios;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener usuarios: " + e.getMessage(), e);
         }
     }
 }
